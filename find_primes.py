@@ -1,8 +1,6 @@
 import sys
 
 inner_loop_iterations: int = 0
-n=1
-
 
 def is_prime(n):
     a: int = 2
@@ -25,12 +23,10 @@ def is_prime(n):
         if n % 2 == 0 or n % a == 0:
             return ("Not prime")
     else:
-        if a > 2:
-            return ("Prime")
+        return ("Prime")
 
-
-while n != 0:
-    sys.stdout.write("Enter a number to see if it's a prime number: ")
+while True:
+    sys.stdout.write("Enter number to see if it's prime ('q' to quit): ")
     n = input()
     if not n:
         continue
@@ -41,6 +37,10 @@ while n != 0:
         n = int(n)
     except ValueError:
         print("Please enter a valid number")
+        
+    if n < 1:
+        print("Please enter a valid number")
+        continue
 
     sys.stdout.write("{}\n".format(is_prime(n)))
     sys.stderr.write("Inner loops: {}\n\n".format(inner_loop_iterations))
