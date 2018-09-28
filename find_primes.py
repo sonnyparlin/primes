@@ -1,47 +1,74 @@
-import sys
+from cmd import Cmd
 
-inner_loop_iterations: int = 0
+class MyPrompt(Cmd):
+    prompt = 'findPrimes> '
+    intro = "Welcome! Type q to quit"
+    
+    __hidden_methods = ('do_EOF','emptyline','is_prime','is_valid')    
+    def get_names(self):
+        return [n for n in dir(self.__class__) if n not in self.__hidden_methods]
+     
+    def do_exit(self, inp):
+        '''exit the application. Shorthand: x q Ctrl-D.'''
+        print("Bye")
+        return True
+        
+    do_EOF = do_exit
+        
+    def emptyline(self):
+        pass
+    
+    def is_prime(self, n):
+        a: int = 2
+        global inner_loop_iterations
 
-def is_prime(n):
-    a: int = 2
-    global inner_loop_iterations
+        if n == 1:
+            return("Not prime")
+        elif n == 2:
+            return("Prime")
 
-    if n == 1:
-        return("Not prime")
-    elif n == 2:
-        return("Prime")
+        while a * a <= n + 1:
+            inner_loop_iterations += 1
+            # This if statement reduces the number of inner loop iterations by roughy 50%
+            # just weeding out the even numbers.
+            if a % 2 == 0:
+                a += 1
+            else:
+                a += 2
 
-    while a * a <= n + 1:
-        inner_loop_iterations += 1
-        # This if statement reduces the number of inner loop iterations by roughy 50%
-        # just weeding out the even numbers.
-        if a % 2 == 0:
-            a += 1
+            if n % 2 == 0 or n % a == 0:
+                return ("Not prime")
         else:
-            a += 2
-
-        if n % 2 == 0 or n % a == 0:
-            return ("Not prime")
-    else:
-        return ("Prime")
-
-while True:
-    sys.stdout.write("Enter number to see if it's prime ('q' to quit): ")
-    n = input()
-    if not n:
-        continue
-    if n == 'q':
-        break
+            return ("Prime")
         
-    try:
-        n = int(n)
-    except ValueError:
-        print("Please enter a valid number")
+    def is_valid(self, n):        
+        if not n:
+            return False
         
-    if n < 1:
-        print("Please enter a valid number")
-        continue
+        try:
+            n = int(n)
+        except ValueError:
+            return False
+        
+        if n < 1:
+            return False
+    
+        return n
+    
+    def default(self, inp):
+        if inp.strip() == 'q':
+            return self.do_exit(inp)
 
-    sys.stdout.write("{}\n".format(is_prime(n)))
-    sys.stderr.write("Inner loops: {}\n\n".format(inner_loop_iterations))
-    inner_loop_iterations=0
+        global inner_loop_iterations
+        n = self.is_valid(inp)
+        if not n:
+            print("Please enter a valid number")
+        else:
+            sys.stdout.write("{}\n".format(self.is_prime(n)))
+            sys.stderr.write("Inner loops: {}\n\n".format(inner_loop_iterations))
+            inner_loop_iterations=0
+
+if __name__ == '__main__':
+    import sys
+    inner_loop_iterations = 0
+    MyPrompt().cmdloop()
