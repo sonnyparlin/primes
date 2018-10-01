@@ -1,5 +1,7 @@
 from cmd import Cmd
 import random
+import time
+
 
 class MyPrompt(Cmd):
     prompt = 'findPrimes> '
@@ -21,7 +23,6 @@ class MyPrompt(Cmd):
     
     # found this function on https://inventwithpython.com/rabinMiller.py
     def rabinMiller(self, num):
-        global inner_loop_iterations
         # Returns True if num is a prime number.
 
         s = num - 1
@@ -38,7 +39,6 @@ class MyPrompt(Cmd):
             if v != 1: # this test does not apply if v is 1.
                 i = 0
                 while v != (num - 1):
-                    inner_loop_iterations+=1
                     if i == t - 1:
                         return False
                     else:
@@ -89,14 +89,14 @@ class MyPrompt(Cmd):
         if inp.strip() == 'q':
             return self.do_exit(inp)
 
-        global inner_loop_iterations
         n = self.is_valid(inp)
         if not n:
             print("Please enter a valid number")
         else:
+            start = time.time()
             sys.stdout.write("{}\n".format(self.is_prime(n)))
-            sys.stderr.write("Inner loops: {}\n\n".format(inner_loop_iterations))
-            inner_loop_iterations=0
+            end = time.time()
+            print("found in {:.9f} seconds".format(end - start))
 
 if __name__ == '__main__':
     import sys
