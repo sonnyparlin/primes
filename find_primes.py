@@ -1,6 +1,8 @@
 from cmd import Cmd
 import random
 import time
+import ast
+import operator as op
 
 
 class MyPrompt(Cmd):
@@ -70,14 +72,29 @@ class MyPrompt(Cmd):
 
         # If all else fails, call rabinMiller() to determine if num is a prime.
         return self.rabinMiller(num)
+
+    def eval_(self, node):
+        global operators
+        if isinstance(node, ast.Num): # <number>
+            return node.n
+        elif isinstance(node, ast.BinOp): # <left> <operator> <right>
+            return operators[type(node.op)](self.eval_(node.left), self.eval_(node.right))
+        elif isinstance(node, ast.UnaryOp): # <operator> <operand> e.g., -1
+            return operators[type(node.op)](self.eval_(node.operand))
+        else:
+            raise ValueError(node)
+
+    def eval_expr(self, expr):
+        return self.eval_(ast.parse(expr, mode='eval').body)
         
     def is_valid(self, n):        
         if not n:
             return False
         
         try:
-            n = int(n)
+            n = int(self.eval_expr(n))
         except ValueError:
+            print("couldn't convert to int")
             return False
         
         if n < 1:
@@ -88,12 +105,21 @@ class MyPrompt(Cmd):
     def default(self, inp):
         if inp.strip() == 'q':
             return self.do_exit(inp)
+        
+        # Let's not crash ourselves.    
+        if '**' in inp:
+            a = inp.split("**")
+            if len(a[1]) > 6:
+                print("Bro, I'm a mac not a rocket ship... the fuck outta here with {}".format(inp))
+                return
 
         n = self.is_valid(inp)
         if not n:
             print("Please enter a valid number")
         else:
             start = time.time()
+            if inp != str(n):
+                print("Expanded expression to {} decimals".format(len(str(n))))
             sys.stdout.write("{}\n".format(self.is_prime(n)))
             end = time.time()
             print("found in {:.9f} seconds".format(end - start))
@@ -101,4 +127,8 @@ class MyPrompt(Cmd):
 if __name__ == '__main__':
     import sys
     inner_loop_iterations = 0
+    # supported operators
+    operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
+                 ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
+                 ast.USub: op.neg}
     MyPrompt().cmdloop()
