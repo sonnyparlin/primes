@@ -110,7 +110,7 @@ class MyPrompt(Cmd):
         if '**' in inp:
             a = inp.split("**")
             if len(a[1]) > 6:
-                print("Bro, I'm a mac not a rocket ship... the fuck outta here with {}".format(inp))
+                print("Bro, I'm a computer not a rocket ship... the fuck outta here with {}".format(inp))
                 return
 
         n = self.is_valid(inp)
