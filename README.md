@@ -22,7 +22,7 @@ findPrimes> 2**11213-1
 Bro, I'm a mac not a rocket ship... the fuck outta here with 2**11213-1
 ```
 As you can see there's a restriction on the number of digits we can square. 
-Feel free to lift the limit by commenting out or deleting the following code in the default function:
+Feel free to lift the limit by commenting out or deleting the following code in the default function, or change the 6 to whatever:
 
 ```
 # Let's not crash ourselves.    
